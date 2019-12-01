@@ -12,7 +12,7 @@
 
 ## Install
 
-Make a right-click on the hyperlink to [remove_duplicates.ps1](https://raw.githubusercontent.com/cavo789/ps_remove_duplicates/remove_duplicates.ps1) and select `save the target of the link as` so you can save the file on your hard disk.
+Make a right-click on the hyperlink to [remove_duplicates.ps1](https://raw.githubusercontent.com/cavo789/ps_remove_duplicates/master/remove_duplicates.ps1) and select `save the target of the link as` so you can save the file on your hard disk.
 
 ## Usage
 

@@ -18,10 +18,11 @@ Make a right-click on the hyperlink to [remove_duplicates.ps1](https://raw.githu
 
 Start a DOS prompt and start the script by running `powershell .\remove_duplicates.ps1` 
 
-Mention the name of:
+You'll be prompted for some parameters:
 
-* the `source` folder
-* the `compared with` folder
+* the `source` folder (the master folder)
+* the `compared with` folder (from where duplicates files should be removed)
+* does WinMerge be started after the cleaning or not? (0=false/1=true)
 
 Please read the explanations displayed on screen and press "yes" then <kbd>Enter</kbd> key to start the script.
 
@@ -32,6 +33,14 @@ At the end, the `compared with` folder will contains only:
 * files not present in the `source` folder
 * files present in the `source` folder but different
 
-### License
+### Tips
+
+You can also directly start the script like this: `powershell .\remove_duplicates.ps1 -SourceFolder c:\christophe\docs -ComparedWith c:\temp\docs -StartWinMerge 0`.
+
+If you want to run WinMerge once the cleaning is doen: `powershell .\remove_duplicates.ps1 -SourceFolder c:\christophe\docs -ComparedWith c:\temp\docs -StartWinMerge 1`.
+
+If WinMerge isn't yet install on your machine, please download and install from here: [https://sourceforge.net/projects/winmerge/](https://sourceforge.net/projects/winmerge/).
+
+## License
 
 [MIT](LICENSE)

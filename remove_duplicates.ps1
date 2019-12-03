@@ -1,7 +1,10 @@
+[CmdletBinding()]
+Param (
+    [Parameter(Mandatory = $true)] [string] $SourceFolder,
+    [Parameter(Mandatory = $true)] [string] $ComparedWith,
+    [Parameter(Mandatory = $true)] [bool] $StartWinMerge
+)
 begin {
-
-    $SourceFolder = "c:\christophe\source_folder"
-    $ComparedWith = "c:\temp\copy"
 
     # Kill empty folders. Use recursivity to make sure that no empty folders remains
     # once an empty subfolder has been removed
@@ -17,7 +20,7 @@ begin {
 
     }
 
-    function RemoveIndenticalFiles ([string] $SourceFolder, [string] $ComparedWith) {
+    function RemoveIndenticalFiles {
 
         $deleted = 0
 
@@ -51,13 +54,59 @@ begin {
         # Remove empty folders in the backup folder
         DeleteEmptyDirectories $ComparedWith
 
-        Write-Host ""
-        Write-Host "    Number of deleted files: $deleted"
+        if ($deleted > 0) { 
+            Write-Host ""
+            Write-Host "    Number of deleted files: $deleted"
+        }
+        else {
+            Write-Host "    No duplicate files found."
+        }
+
+    }
+
+    # Count the number of files still in the CompareWith folder and if greater than
+    # zero, start WinMerge to make easier to finish the comparaison
+    function CountFiles() {
+        $fso = Get-ChildItem -Path $ComparedWith -Recurse -File
+        $count = $fso | Measure-Object | % { $_.Count }
+
+        if ($count -gt 0) {
+            Write-Host "    There are $count files in ""$ComparedWith""."
+            Write-Host "    These files are missing in ""$SourceFolder"" or were different."
+
+            if ($StartWinMerge -eq 1) {
+                # Start WinMerge
+                # If not installed, download it from here https://sourceforge.net/projects/winmerge/
+                # Command line arguments: https://manual.winmerge.org/en/Command_line.html
+                Start "C:\Program Files\WinMerge\WinMergeU.exe" "/r /wl ""$SourceFolder"" /wr ""$ComparedWith"" /u"
+            }
+            else {
+                Write-Host "    Tips: run the script with -StartWinMerge=1 to complete your comparison work with ease"
+            }
+        }
+        else {
+            Write-Host "    No more files are present in ""$ComparedWith"". All files were duplicated files."
+        }
+
+    }
+
+    #  Validate command line parameters
+    function validate() {
+        $SourceFolder = $SourceFolder.Trim()
+        $ComparedWith = $ComparedWith.Trim()
+
+        if (-not (Test-Path $SourceFolder)) {
+            Write-Host "ERROR - The source folder ""$SourceFolder"" didn't exists" -ForegroundColor White -BackgroundColor Red
+            exit -1
+        }
+
+        if (-not (Test-Path $ComparedWith)) {
+            Write-Host "ERROR - The compare with folder ""$ComparedWith"" didn't exists" -ForegroundColor White -BackgroundColor Red
+            exit -2
+        }
     }
 
     function showIntro() {
-        Write-Host "Compare two folders and remove in the second duplicated files" -ForegroundColor Cyan
-        Write-Host ""
         Write-Host "The script will compare the ""$ComparedWith"" and the ""$SourceFolder"" folders and:"
         Write-Host ""
         Write-Host "   1. Check any files present in ""$ComparedWith"" and if an exact copy is already in ""$SourceFolder"", THE FILE WILL BE REMOVED IN ""$ComparedWith"""
@@ -92,6 +141,11 @@ begin {
     # # Entry point #
     # ###############
 
+    Write-Host "Remove_duplicates - Compare two folders on your disk and remove duplicates in the second folder" -ForegroundColor Cyan
+    Write-Host ""
+
+    validate
+
     showIntro
 
     Write-Host ""
@@ -101,7 +155,8 @@ begin {
 
     if (Ask-BeforeContinue) {
         # Remove duplicate files in $ComparedWith
-        RemoveIndenticalFiles $SourceFolder $ComparedWith
+        RemoveIndenticalFiles
+        CountFiles
     }
     else {
         Write-Host ""

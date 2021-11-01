@@ -1,6 +1,6 @@
-![Banner](images/banner.png)
-
 # Remove duplicates
+
+![Banner](./banner.svg)
 
 > Powershell script that will compare two folders and will removes duplicated files in the second folder. At the end, the second folder will only contains new or modified files.
 
